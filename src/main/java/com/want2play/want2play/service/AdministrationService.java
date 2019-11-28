@@ -14,10 +14,10 @@ import java.util.Optional;
 @Service
 public class AdministrationService {
 
-    SportRepository sportRepository;
-    CountryRepository countryRepository;
-    StadiumRepository stadiumRepository;
-    PlayerRepository playerRepository;
+    private SportRepository sportRepository;
+    private CountryRepository countryRepository;
+    private StadiumRepository stadiumRepository;
+    private PlayerRepository playerRepository;
 
     public AdministrationService(SportRepository sportRepository, CountryRepository countryRepository, StadiumRepository stadiumRepository, PlayerRepository playerRepository) {
         this.sportRepository = sportRepository;
