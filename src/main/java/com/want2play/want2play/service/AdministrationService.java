@@ -5,7 +5,6 @@ import com.want2play.want2play.repository.CountryRepository;
 import com.want2play.want2play.repository.PlayerRepository;
 import com.want2play.want2play.repository.SportRepository;
 import com.want2play.want2play.repository.StadiumRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,17 +14,17 @@ import java.util.Optional;
 @Service
 public class AdministrationService {
 
-    @Autowired
     SportRepository sportRepository;
-
-    @Autowired
     CountryRepository countryRepository;
-
-    @Autowired
     StadiumRepository stadiumRepository;
-
-    @Autowired
     PlayerRepository playerRepository;
+
+    public AdministrationService(SportRepository sportRepository, CountryRepository countryRepository, StadiumRepository stadiumRepository, PlayerRepository playerRepository) {
+        this.sportRepository = sportRepository;
+        this.countryRepository = countryRepository;
+        this.stadiumRepository = stadiumRepository;
+        this.playerRepository = playerRepository;
+    }
 
     public Sport saveSport(Sport sport) {
         return sportRepository.save(sport);

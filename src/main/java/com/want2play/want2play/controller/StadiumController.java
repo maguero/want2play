@@ -4,7 +4,6 @@ import com.want2play.want2play.model.Field;
 import com.want2play.want2play.model.Stadium;
 import com.want2play.want2play.service.AdministrationService;
 import org.apache.commons.lang.NotImplementedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,8 +12,11 @@ import java.util.List;
 @RequestMapping(value = "/stadiums")
 public class StadiumController {
 
-    @Autowired
     AdministrationService service;
+
+    public StadiumController(AdministrationService service) {
+        this.service = service;
+    }
 
     @RequestMapping(value = "/{city}", method = RequestMethod.GET)
     public List<Stadium> getAll(@PathVariable("city") String city) {

@@ -4,7 +4,6 @@ import com.want2play.want2play.model.Match;
 import com.want2play.want2play.model.MatchStates;
 import com.want2play.want2play.repository.MatchRepository;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +12,11 @@ import java.util.UUID;
 @Service
 public class MatchService {
 
-    @Autowired
     private MatchRepository matchRepository;
+
+    public MatchService(MatchRepository matchRepository) {
+        this.matchRepository = matchRepository;
+    }
 
     public List<Match> getAllMatches() {
         return matchRepository.findAll();

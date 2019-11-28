@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MatchesIntegrationTest {
 
     @Autowired
-    MatchService matchService;
+    private MatchService matchService;
 
     @Test
     public void saveAnInitialMatch() {
