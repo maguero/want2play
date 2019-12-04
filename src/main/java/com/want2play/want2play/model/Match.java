@@ -18,17 +18,20 @@ public class Match {
     private Team teamB;
     private Date schedule;
     private String notes;
-    private MatchStates state;
+    private String state;
 
     public Match() {
-        this.id = UUID.randomUUID().toString();
-        this.state = MatchStates.NEW;
+    }
+
+    public Match(String id) {
+        this.id = id;
+        this.state = MatchStates.NEW.toString();
     }
 
     public Match(Player adminPlayer, MatchStates state) {
         this.id = UUID.randomUUID().toString();
         this.adminPlayer = adminPlayer;
-        this.state = state;
+        this.state = state.toString();
     }
 
     public String getId() {
@@ -95,11 +98,11 @@ public class Match {
         this.notes = notes;
     }
 
-    public MatchStates getState() {
+    public String getState() {
         return state;
     }
 
     public void setState(MatchStates state) {
-        this.state = state;
+        this.state = state.toString();
     }
 }

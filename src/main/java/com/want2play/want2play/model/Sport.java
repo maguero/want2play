@@ -3,15 +3,20 @@ package com.want2play.want2play.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Objects;
+
 @Document(collection = "sports")
 public class Sport {
 
     @Id
     private String id;
     private String name;
-    private int playersByTeam;
+    private Integer playersByTeam;
 
-    public Sport(String id, String name, int playersByTeam) {
+    public Sport() {
+    }
+
+    public Sport(String id, String name, Integer playersByTeam) {
         this.id = id;
         this.name = name;
         this.playersByTeam = playersByTeam;
@@ -33,11 +38,26 @@ public class Sport {
         this.name = name;
     }
 
-    public int getPlayersByTeam() {
+    public Integer getPlayersByTeam() {
         return playersByTeam;
     }
 
-    public void setPlayersByTeam(int playersByTeam) {
+    public void setPlayersByTeam(Integer playersByTeam) {
         this.playersByTeam = playersByTeam;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sport sport = (Sport) o;
+        return playersByTeam == sport.playersByTeam &&
+                Objects.equals(id, sport.id) &&
+                Objects.equals(name, sport.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, playersByTeam);
     }
 }

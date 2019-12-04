@@ -2,11 +2,9 @@ package com.want2play.want2play.controller;
 
 import com.want2play.want2play.model.Match;
 import com.want2play.want2play.service.MatchService;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -19,14 +17,40 @@ public class MatchController {
         this.service = service;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public List<Match> getAll() {
         return service.getAllMatches();
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
-    public Match saveMatch(@RequestBody Match match) {
+    @RequestMapping(method = RequestMethod.POST)
+    public Match saveMatch(@RequestBody Match match, HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_CREATED);
         return service.saveMatch(match);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT)
+    public Match updateMatch(@RequestBody Match match) {
+        return service.updateMatch(match);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public Match getMatchById(@PathVariable("id") String id) {
+        return service.getById(id);
+    }
+
+    @RequestMapping(value = "/", params = "adminPlayer", method = RequestMethod.GET)
+    public List<Match> getMatchesByAdminPlayer(@RequestParam("adminPlayer") String adminPlayerId) {
+        return service.getMatchesByAdminPlayer(adminPlayerId);
+    }
+
+    @RequestMapping(value = "/", params = "state", method = RequestMethod.GET)
+    public List<Match> getMatchesByState(@RequestParam("state") String state) {
+        return service.getMatchesByState(state);
+    }
+
+    @RequestMapping(value = "/", params = {"city", "sport"}, method = RequestMethod.GET)
+    public List<Match> getOpenMatchesByCityAndSport(@RequestParam("city") String city, @RequestParam("sport") String sport) {
+        return service.getOpenMatchesByCityAndSport(city, sport);
     }
 
 }

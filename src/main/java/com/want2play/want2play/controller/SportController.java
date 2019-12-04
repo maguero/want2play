@@ -19,12 +19,12 @@ public class SportController {
         this.service = service;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public List<Sport> getAll() {
         return service.getAllSports();
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public Sport saveSport(@RequestBody Sport sport) {
         return service.saveSport(sport);
     }

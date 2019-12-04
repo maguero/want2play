@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Document(collection = "stadiums")
@@ -63,5 +64,22 @@ public class Stadium {
 
     public void setFields(List<Field> fields) {
         this.fields = fields;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Stadium stadium = (Stadium) o;
+        return Objects.equals(id, stadium.id) &&
+                Objects.equals(name, stadium.name) &&
+                Objects.equals(address, stadium.address) &&
+                Objects.equals(city, stadium.city) &&
+                Objects.equals(fields, stadium.fields);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, address, city, fields);
     }
 }
