@@ -1,6 +1,7 @@
 package com.want2play.want2play.service;
 
 import com.want2play.want2play.exception.W2PEntityExistsException;
+import com.want2play.want2play.exception.W2PNotFoundException;
 import com.want2play.want2play.model.Match;
 import com.want2play.want2play.model.MatchStates;
 import com.want2play.want2play.repository.MatchRepository;
@@ -9,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -25,7 +27,11 @@ public class MatchService {
     }
 
     public Match getById(String id) {
-        return matchRepository.findById(id).get();
+        Optional<Match> matchById = matchRepository.findById(id);
+        if (matchById.isEmpty()) {
+            throw new W2PNotFoundException();
+        }
+        return matchById.get();
     }
 
     public Match saveMatch(Match match) {
@@ -44,6 +50,14 @@ public class MatchService {
 
     public Match updateMatch(Match match) {
         throw new NotImplementedException();
+    }
+
+    public void deleteMatch(String matchId) {
+        Optional<Match> match = matchRepository.findById(matchId);
+        if (match.isEmpty()) {
+            throw new W2PNotFoundException();
+        }
+        matchRepository.delete(match.get());
     }
 
     public List<Match> getMatchesByAdminPlayer(String adminPlayerId) {

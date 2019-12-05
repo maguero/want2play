@@ -5,6 +5,7 @@ import com.want2play.want2play.service.MatchService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -23,7 +24,7 @@ public class MatchController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public Match saveMatch(@RequestBody Match match, HttpServletResponse response) {
+    public Match saveMatch(@RequestBody @Valid Match match, HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_CREATED);
         return service.saveMatch(match);
     }
@@ -31,6 +32,12 @@ public class MatchController {
     @RequestMapping(method = RequestMethod.PUT)
     public Match updateMatch(@RequestBody Match match) {
         return service.updateMatch(match);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public void deleteMatch(@PathVariable("id") String id, HttpServletResponse response) {
+        service.deleteMatch(id);
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
