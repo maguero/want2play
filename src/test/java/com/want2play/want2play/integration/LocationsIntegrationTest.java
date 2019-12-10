@@ -3,7 +3,7 @@ package com.want2play.want2play.integration;
 import com.want2play.want2play.model.City;
 import com.want2play.want2play.model.Country;
 import com.want2play.want2play.model.State;
-import com.want2play.want2play.service.AdministrationService;
+import com.want2play.want2play.service.LocationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
-    private AdministrationService adminService;
+    private LocationService adminService;
 
     private Country insertCountry(Country country) {
         return adminService.saveCountry(country);
@@ -58,6 +58,23 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
             assertThat(actualCountry).extracting(Country::getCode).isEqualTo("SPN");
             assertThat(actualCountry).extracting(Country::getName).isEqualTo("Spain");
             assertThat(actualCountry.getStates().get(0)).extracting(State::getName).isEqualTo("Barcelona");
+        }
+
+        @Test
+        @DisplayName("Add a duplicated Country")
+        public void saveDuplicatedCountry() {
+            // given
+            Country expectedCountry = new Country.Builder()
+                    .withCode("SPN").withName("Spain")
+                    .withState(new State("Barcelona")
+                            , Arrays.asList(new City("Barcelona"), new City("Badalona"))).build();
+            insertCountry(expectedCountry);
+
+            // when
+            ResponseEntity<Country> savedCountryResponse = restTemplate.postForEntity("/locations", expectedCountry, Country.class);
+
+            // then
+            assertThat(savedCountryResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         }
 
         @Test

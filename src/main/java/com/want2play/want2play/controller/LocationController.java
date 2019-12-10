@@ -4,7 +4,7 @@ import com.want2play.want2play.exception.W2PNotFoundException;
 import com.want2play.want2play.model.City;
 import com.want2play.want2play.model.Country;
 import com.want2play.want2play.model.State;
-import com.want2play.want2play.service.AdministrationService;
+import com.want2play.want2play.service.LocationService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +16,9 @@ import java.util.Optional;
 @RequestMapping(value = "/locations")
 public class LocationController {
 
-    private AdministrationService service;
+    private LocationService service;
 
-    public LocationController(AdministrationService service) {
+    public LocationController(LocationService service) {
         this.service = service;
     }
 

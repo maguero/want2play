@@ -1,7 +1,7 @@
 package com.want2play.want2play.controller;
 
 import com.want2play.want2play.model.Sport;
-import com.want2play.want2play.service.AdministrationService;
+import com.want2play.want2play.service.SportService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,9 +13,9 @@ import java.util.List;
 @RequestMapping(value = "/sports")
 public class SportController {
 
-    private AdministrationService service;
+    private SportService service;
 
-    public SportController(AdministrationService service) {
+    public SportController(SportService service) {
         this.service = service;
     }
 

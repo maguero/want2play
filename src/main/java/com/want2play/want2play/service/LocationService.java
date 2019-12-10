@@ -2,46 +2,23 @@ package com.want2play.want2play.service;
 
 import com.want2play.want2play.exception.W2PEntityExistsException;
 import com.want2play.want2play.exception.W2PNotFoundException;
-import com.want2play.want2play.model.*;
+import com.want2play.want2play.model.City;
+import com.want2play.want2play.model.Country;
+import com.want2play.want2play.model.State;
 import com.want2play.want2play.repository.CountryRepository;
-import com.want2play.want2play.repository.PlayerRepository;
-import com.want2play.want2play.repository.SportRepository;
-import com.want2play.want2play.repository.StadiumRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AdministrationService {
+public class LocationService {
 
-    private SportRepository sportRepository;
     private CountryRepository countryRepository;
-    private StadiumRepository stadiumRepository;
-    private PlayerRepository playerRepository;
 
-    public AdministrationService(SportRepository sportRepository, CountryRepository countryRepository, StadiumRepository stadiumRepository, PlayerRepository playerRepository) {
-        this.sportRepository = sportRepository;
+    public LocationService(CountryRepository countryRepository) {
         this.countryRepository = countryRepository;
-        this.stadiumRepository = stadiumRepository;
-        this.playerRepository = playerRepository;
     }
-
-    /**
-     * --- SPORT methods ---
-     */
-
-    public Sport saveSport(Sport sport) {
-        return sportRepository.save(sport);
-    }
-
-    public List<Sport> getAllSports() {
-        return sportRepository.findAll();
-    }
-
-    /**
-     * --- COUNTRY methods ---
-     */
 
     public List<Country> getAllCountries() {
         return countryRepository.findAll();
@@ -52,6 +29,9 @@ public class AdministrationService {
     }
 
     public Country saveCountry(Country country) {
+        if (countryRepository.existsById(country.getCode())) {
+            throw new W2PEntityExistsException();
+        }
         return countryRepository.save(country);
     }
 
@@ -91,30 +71,6 @@ public class AdministrationService {
         } else {
             throw new W2PNotFoundException();
         }
-    }
-
-    /**
-     * --- STADIUM methods ---
-     */
-
-    public List<Stadium> getAllStadiums() {
-        return stadiumRepository.findAll();
-    }
-
-    public List<Stadium> getStadiumsByCity(String city) {
-        return stadiumRepository.findByCity(city);
-    }
-
-    public Stadium saveStadium(Stadium stadium) {
-        return stadiumRepository.save(stadium);
-    }
-
-    /**
-     * --- PLAYER methods ---
-     */
-
-    public List<Player> getAllPlayers() {
-        return playerRepository.findAll();
     }
 
 }

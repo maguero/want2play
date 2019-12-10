@@ -1,7 +1,6 @@
 package com.want2play.want2play;
 
-import com.want2play.want2play.service.AdministrationService;
-import com.want2play.want2play.service.MatchService;
+import com.want2play.want2play.service.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +15,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(locations = "classpath:application-test.properties")
 class WantToPlayCoreApplicationTests {
 
-	@Autowired
-	AdministrationService administrationService;
+    @Autowired
+    private LocationService locationService;
 
-	@Autowired
-	MatchService matchService;
+    @Autowired
+    private MatchService matchService;
 
-	@Test
-	void contextLoads() {
-		assertThat(administrationService).isNotNull();
-		assertThat(matchService).isNotNull();
-	}
+    @Autowired
+    private SportService sportService;
+
+    @Autowired
+    private PlayerService playerService;
+
+    @Autowired
+    private StadiumService stadiumService;
+
+    @Test
+    void contextLoads() {
+        assertThat(locationService).isNotNull();
+        assertThat(matchService).isNotNull();
+        assertThat(sportService).isNotNull();
+        assertThat(playerService).isNotNull();
+        assertThat(stadiumService).isNotNull();
+    }
 
 }

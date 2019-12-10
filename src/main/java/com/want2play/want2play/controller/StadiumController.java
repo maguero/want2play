@@ -2,7 +2,7 @@ package com.want2play.want2play.controller;
 
 import com.want2play.want2play.model.Field;
 import com.want2play.want2play.model.Stadium;
-import com.want2play.want2play.service.AdministrationService;
+import com.want2play.want2play.service.StadiumService;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +12,9 @@ import java.util.List;
 @RequestMapping(value = "/stadiums")
 public class StadiumController {
 
-    AdministrationService service;
+    private StadiumService service;
 
-    public StadiumController(AdministrationService service) {
+    public StadiumController(StadiumService service) {
         this.service = service;
     }
 
