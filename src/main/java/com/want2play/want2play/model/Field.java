@@ -1,10 +1,15 @@
 package com.want2play.want2play.model;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 public class Field {
 
+    @NotNull
+    @NotEmpty
     private String name;
+    @NotNull
     private String sport;
 
     public Field(String name, String sport) {
