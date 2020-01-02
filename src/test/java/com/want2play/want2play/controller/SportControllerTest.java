@@ -1,7 +1,7 @@
 package com.want2play.want2play.controller;
 
 import com.want2play.want2play.model.Sport;
-import com.want2play.want2play.service.AdministrationService;
+import com.want2play.want2play.service.SportService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,7 +28,7 @@ public class SportControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private AdministrationService service;
+    private SportService service;
 
     @Test
     public void shouldReturnAllSports() throws Exception {
