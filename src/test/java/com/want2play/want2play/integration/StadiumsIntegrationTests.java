@@ -29,7 +29,7 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
     }
 
     @BeforeEach
-    private void cleanStadiums() {
+    public void cleanStadiums() {
         stadiumService.getAllStadiums().forEach(stadium -> stadiumService.deleteStadium(stadium.getId()));
     }
 
@@ -99,7 +99,7 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
             // given
             Stadium expectedStadium = insertStadium(new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")
-                    .withAddress("Some address")
+                    .withAddress("Old address")
                     .withCity("Barcelona")
                     .withFields(Arrays.asList(new Field("Palau Baulgrama", "Basketball")))
                     .build());
@@ -119,7 +119,7 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
             // given
             Stadium expectedStadium = insertStadium(new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")
-                    .withAddress("Some address")
+                    .withAddress("An address")
                     .withCity("Barcelona")
                     .withFields(Arrays.asList(new Field("Palau Baulgrama", "Basketball")))
                     .build());
@@ -171,13 +171,11 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
             // given
             insertStadium(new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")
-                    .withAddress("Some address")
                     .withCity("Barcelona")
                     .withFields(Arrays.asList(new Field("Palau Baulgrama", "Basketball")))
                     .build());
             insertStadium(new Stadium.Builder().withId("RMD")
                     .withName("Real Madrid")
-                    .withAddress("Some address")
                     .withCity("Madrid")
                     .withFields(Arrays.asList(new Field("Santiago Bernabeu", "Soccer")))
                     .build());
@@ -198,15 +196,11 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
             // given
             insertStadium(new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")
-                    .withAddress("Some address")
                     .withCity("Barcelona")
-                    .withFields(Arrays.asList(new Field("Palau Baulgrama", "Basketball")))
                     .build());
             insertStadium(new Stadium.Builder().withId("RMD")
                     .withName("Real Madrid")
-                    .withAddress("Some address")
                     .withCity("Madrid")
-                    .withFields(Arrays.asList(new Field("Santiago Bernabeu", "Soccer")))
                     .build());
 
             // when
@@ -235,19 +229,16 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
                     .withName("Barcelona FC")
                     .withAddress("Some address")
                     .withCity("Barcelona")
-                    .withFields(Arrays.asList(new Field("Palau Baulgrama", "Basketball")))
                     .build());
             insertStadium(new Stadium.Builder().withId("RMD")
                     .withName("Real Madrid")
                     .withAddress("Some address")
                     .withCity("Madrid")
-                    .withFields(Arrays.asList(new Field("Santiago Bernabeu", "Soccer")))
                     .build());
             insertStadium(new Stadium.Builder().withId("AMD")
                     .withName("Atletico Madrid")
                     .withAddress("Some address")
                     .withCity("Madrid")
-                    .withFields(Arrays.asList(new Field("ATM Soccer Field", "Soccer")))
                     .build());
 
             // when

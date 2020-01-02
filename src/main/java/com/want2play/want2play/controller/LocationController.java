@@ -5,7 +5,11 @@ import com.want2play.want2play.model.City;
 import com.want2play.want2play.model.Country;
 import com.want2play.want2play.model.State;
 import com.want2play.want2play.service.LocationService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;

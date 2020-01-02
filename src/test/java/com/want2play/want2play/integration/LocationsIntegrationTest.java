@@ -32,7 +32,7 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
     }
 
     @BeforeEach
-    private void cleanCountries() {
+    public void cleanCountries() {
         adminService.getAllCountries().stream().forEach(c -> adminService.deleteCountry(c.getCode()));
     }
 

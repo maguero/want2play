@@ -1,7 +1,12 @@
 package com.want2play.want2play.integration;
 
 import com.want2play.want2play.exception.W2PEntityExistsException;
-import com.want2play.want2play.model.*;
+import com.want2play.want2play.model.Field;
+import com.want2play.want2play.model.Match;
+import com.want2play.want2play.model.MatchStates;
+import com.want2play.want2play.model.Player;
+import com.want2play.want2play.model.Sport;
+import com.want2play.want2play.model.Stadium;
 import com.want2play.want2play.service.MatchService;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,12 +32,8 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
         return matchService.saveMatch(match);
     }
 
-    private void insertMatches(Match... matches) {
-        Arrays.stream(matches).forEach(match -> insertMatch(match));
-    }
-
     @BeforeEach
-    private void cleanMatches() {
+    public void cleanMatches() {
         matchService.getAllMatches().stream().forEach(match -> matchService.deleteMatch(match.getId()));
     }
 
@@ -121,7 +122,6 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
                     .withAdminPlayer(new Player("@1", "Player 1"))
                     .withSchedule(DateTime.now().toDate())
                     .build();
-            ;
             insertMatch(expectedMatch);
 
             // when

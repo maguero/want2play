@@ -1,6 +1,10 @@
 package com.want2play.want2play;
 
-import com.want2play.want2play.service.*;
+import com.want2play.want2play.service.LocationService;
+import com.want2play.want2play.service.MatchService;
+import com.want2play.want2play.service.PlayerService;
+import com.want2play.want2play.service.SportService;
+import com.want2play.want2play.service.StadiumService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

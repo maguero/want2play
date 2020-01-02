@@ -28,7 +28,7 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
     }
 
     @BeforeEach
-    private void cleanSports() {
+    public void cleanSports() {
         sportService.getAllSports().forEach(sport -> sportService.deleteSport(sport.getId()));
     }
 

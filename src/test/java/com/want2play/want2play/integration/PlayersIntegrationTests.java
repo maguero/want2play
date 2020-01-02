@@ -28,7 +28,7 @@ public class PlayersIntegrationTests extends AbstractIntegrationTest {
     }
 
     @BeforeEach
-    private void cleanPlayers() {
+    public void cleanPlayers() {
         playerService.getAllPlayers().forEach(player -> playerService.deletePlayer(player.getId()));
     }
 

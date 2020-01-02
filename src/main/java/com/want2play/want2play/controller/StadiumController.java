@@ -4,7 +4,12 @@ import com.want2play.want2play.model.Field;
 import com.want2play.want2play.model.Stadium;
 import com.want2play.want2play.service.StadiumService;
 import org.apache.commons.lang.NotImplementedException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
