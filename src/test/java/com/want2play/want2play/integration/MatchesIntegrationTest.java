@@ -98,7 +98,6 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
                     .withAdminPlayer(new Player("@1", "Player 1"))
                     .withSchedule(DateTime.now().toDate())
                     .build();
-            ;
             insertMatch(expectedMatch);
 
             // when
