@@ -1,6 +1,6 @@
 package com.want2play.want2play.controller;
 
-import com.want2play.want2play.model.Sport;
+import com.want2play.want2play.dto.SportDto;
 import com.want2play.want2play.service.SportService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,28 +24,28 @@ public class SportController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Sport> getAll() {
+    public List<SportDto> getAll() {
         return service.getAllSports();
     }
 
     @RequestMapping(value = "/", params = "name", method = RequestMethod.GET)
-    public List<Sport> getSportsByName(@RequestParam("name") String name) {
+    public List<SportDto> getSportsByName(@RequestParam("name") String name) {
         return service.getSportsByName(name);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Sport getById(@PathVariable("id") String id) {
+    public SportDto getById(@PathVariable("id") String id) {
         return service.getSportById(id);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public Sport saveSport(@RequestBody @Valid Sport sport, HttpServletResponse response) {
+    public SportDto saveSport(@RequestBody @Valid SportDto sport, HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_CREATED);
         return service.insertSport(sport);
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public Sport updateSport(@RequestBody @Valid Sport sport) {
+    public SportDto updateSport(@RequestBody @Valid SportDto sport) {
         return service.updateSport(sport);
     }
 

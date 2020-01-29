@@ -1,6 +1,6 @@
 package com.want2play.want2play.controller;
 
-import com.want2play.want2play.model.Sport;
+import com.want2play.want2play.dto.SportDto;
 import com.want2play.want2play.service.SportService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +32,9 @@ public class SportControllerTest {
 
     @Test
     public void shouldReturnAllSports() throws Exception {
-        List<Sport> expectedSports = new ArrayList<Sport>();
-        expectedSports.add(new Sport("BSK", "Basketball", 5));
-        expectedSports.add(new Sport("SCC", "Soccer", 11));
+        List<SportDto> expectedSports = new ArrayList<SportDto>();
+        expectedSports.add(new SportDto("BSK", "Basketball", 5));
+        expectedSports.add(new SportDto("SCC", "Soccer", 11));
 
         when(service.getAllSports()).thenReturn(expectedSports);
 

@@ -1,4 +1,4 @@
-package com.want2play.want2play.documentation;
+package com.want2play.want2play.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

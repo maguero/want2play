@@ -1,60 +1,21 @@
 package com.want2play.want2play.service;
 
-import com.want2play.want2play.exception.W2PEntityExistsException;
-import com.want2play.want2play.exception.W2PNotFoundException;
-import com.want2play.want2play.model.Sport;
-import com.want2play.want2play.repository.SportRepository;
-import org.springframework.stereotype.Service;
+import com.want2play.want2play.dto.SportDto;
 
 import java.util.List;
-import java.util.Optional;
 
-@Service
-public class SportService {
+public interface SportService {
 
-    private SportRepository sportRepository;
+    List<SportDto> getAllSports();
 
-    public SportService(SportRepository sportRepository) {
-        this.sportRepository = sportRepository;
-    }
+    List<SportDto> getSportsByName(String name);
 
-    public List<Sport> getAllSports() {
-        return sportRepository.findAll();
-    }
+    SportDto getSportById(String id);
 
-    public List<Sport> getSportsByName(String name) {
-        return sportRepository.findByNameContaining(name);
-    }
+    SportDto insertSport(SportDto sport);
 
-    public Sport getSportById(String id) {
-        Optional<Sport> sportById = sportRepository.findById(id);
-        if (sportById.isEmpty()) {
-            throw new W2PNotFoundException();
-        }
-        return sportById.get();
-    }
+    SportDto updateSport(SportDto sport);
 
-    public Sport insertSport(Sport sport) {
-        if (sportRepository.existsById(sport.getId())) {
-            throw new W2PEntityExistsException();
-        }
-        return sportRepository.save(sport);
-    }
-
-    public Sport updateSport(Sport sport) {
-        checkIfSportExistsOrThrowException(sport.getId());
-        return sportRepository.save(sport);
-    }
-
-    public void deleteSport(String id) {
-        checkIfSportExistsOrThrowException(id);
-        sportRepository.deleteById(id);
-    }
-
-    private void checkIfSportExistsOrThrowException(String sportId) {
-        if (!sportRepository.existsById(sportId)) {
-            throw new W2PNotFoundException();
-        }
-    }
+    void deleteSport(String id);
 
 }
