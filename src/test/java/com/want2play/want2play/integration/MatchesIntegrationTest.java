@@ -1,6 +1,7 @@
 package com.want2play.want2play.integration;
 
 import com.want2play.want2play.exception.W2PEntityExistsException;
+import com.want2play.want2play.exception.W2PEntityNotFoundException;
 import com.want2play.want2play.model.Field;
 import com.want2play.want2play.model.Match;
 import com.want2play.want2play.model.MatchStates;
@@ -28,13 +29,19 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private MatchService matchService;
 
-    private Match insertMatch(Match match) {
+    private Match insertMatch(Match match) throws W2PEntityExistsException {
         return matchService.saveMatch(match);
     }
 
     @BeforeEach
     public void cleanMatches() {
-        matchService.getAllMatches().stream().forEach(match -> matchService.deleteMatch(match.getId()));
+        matchService.getAllMatches().stream().forEach(match -> {
+            try {
+                matchService.deleteMatch(match.getId());
+            } catch (W2PEntityNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Nested
@@ -90,7 +97,7 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Error trying to insert a duplicate Match")
-        public void errorSavingExistingMatch() {
+        public void errorSavingExistingMatch() throws W2PEntityExistsException {
             // given
             Match expectedMatch = new Match.Builder()
                     .withSport(new Sport("BSK", "Basketball", 5))
@@ -112,7 +119,7 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Delete a Match")
-        public void deleteAMatch() {
+        public void deleteAMatch() throws W2PEntityExistsException {
             // given
             Match expectedMatch = new Match.Builder()
                     .withId("ID001")
@@ -137,7 +144,7 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Return a Match by ID")
-        public void returnMatchById() {
+        public void returnMatchById() throws W2PEntityExistsException {
             // given
             insertMatch(new Match("ID001"));
 
@@ -151,7 +158,7 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Return the Matches created by a player")
-        public void returnsMatchesByAdminPlayer() {
+        public void returnsMatchesByAdminPlayer() throws W2PEntityExistsException {
 
             // given
             Match firstMatch = new Match("ID002");
@@ -177,7 +184,7 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Return Matches by state")
-        public void returnsMatchesByState() {
+        public void returnsMatchesByState() throws W2PEntityExistsException {
 
             // given
             Match firstMatch = new Match("ID005");
@@ -199,7 +206,7 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Return Matches by city and sport")
-        public void returnsMatchesByCityAndSport() {
+        public void returnsMatchesByCityAndSport() throws W2PEntityExistsException {
 
             // given
             Match firstMatch = new Match("ID007");

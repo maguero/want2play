@@ -3,7 +3,6 @@ package com.want2play.want2play.service.impl;
 import com.want2play.want2play.dto.PlayerDto;
 import com.want2play.want2play.exception.W2PEntityExistsException;
 import com.want2play.want2play.exception.W2PEntityNotFoundException;
-import com.want2play.want2play.exception.W2PNotFoundException;
 import com.want2play.want2play.model.Player;
 import com.want2play.want2play.repository.PlayerRepository;
 import com.want2play.want2play.service.PlayerService;
@@ -37,9 +36,9 @@ public class PlayerServiceImpl implements PlayerService {
                 .orElseThrow(() -> new W2PEntityNotFoundException(String.format("Player #%s not found.", id))));
     }
 
-    public PlayerDto insertPlayer(PlayerDto player) {
+    public PlayerDto insertPlayer(PlayerDto player) throws W2PEntityExistsException {
         if (playerRepository.existsById(player.getId())) {
-            throw new W2PEntityExistsException();
+            throw new W2PEntityExistsException(String.format("Player #%s already exists.", player.getId()));
         }
         return convertToDto(playerRepository.save(convertToEntity(player)));
     }

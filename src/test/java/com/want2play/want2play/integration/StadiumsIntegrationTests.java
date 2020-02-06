@@ -1,5 +1,7 @@
 package com.want2play.want2play.integration;
 
+import com.want2play.want2play.exception.W2PEntityExistsException;
+import com.want2play.want2play.exception.W2PEntityNotFoundException;
 import com.want2play.want2play.model.Field;
 import com.want2play.want2play.model.Stadium;
 import com.want2play.want2play.service.StadiumService;
@@ -24,13 +26,19 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
     @Autowired
     private StadiumService stadiumService;
 
-    private Stadium insertStadium(Stadium stadium) {
+    private Stadium insertStadium(Stadium stadium) throws W2PEntityExistsException {
         return stadiumService.insertStadium(stadium);
     }
 
     @BeforeEach
     public void cleanStadiums() {
-        stadiumService.getAllStadiums().forEach(stadium -> stadiumService.deleteStadium(stadium.getId()));
+        stadiumService.getAllStadiums().forEach(stadium -> {
+            try {
+                stadiumService.deleteStadium(stadium.getId());
+            } catch (W2PEntityNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Nested
@@ -76,7 +84,7 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Error inserting a duplicate stadium")
-        public void insertDuplicateStadium() {
+        public void insertDuplicateStadium() throws W2PEntityExistsException {
             // given
             Stadium expectedStadium = new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")
@@ -95,7 +103,7 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Update a stadium")
-        public void updateStadium() {
+        public void updateStadium() throws W2PEntityExistsException {
             // given
             Stadium expectedStadium = insertStadium(new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")
@@ -115,7 +123,7 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Error updating a stadium")
-        public void updateNonCompleteStadium() {
+        public void updateNonCompleteStadium() throws W2PEntityExistsException {
             // given
             Stadium expectedStadium = insertStadium(new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")
@@ -134,7 +142,7 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Delete a stadium")
-        public void deleteStadium() {
+        public void deleteStadium() throws W2PEntityExistsException {
             // given
             insertStadium(new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")
@@ -167,7 +175,7 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Get all stadiums")
-        public void getAllStadiums() {
+        public void getAllStadiums() throws W2PEntityExistsException {
             // given
             insertStadium(new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")
@@ -192,7 +200,7 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Get a stadium by ID")
-        public void getStadiumById() {
+        public void getStadiumById() throws W2PEntityExistsException {
             // given
             insertStadium(new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")
@@ -223,7 +231,7 @@ public class StadiumsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Get stadiums by city")
-        public void getStadiumsByCity() {
+        public void getStadiumsByCity() throws W2PEntityExistsException {
             // given
             insertStadium(new Stadium.Builder().withId("BFC")
                     .withName("Barcelona FC")

@@ -1,5 +1,7 @@
 package com.want2play.want2play.integration;
 
+import com.want2play.want2play.exception.W2PEntityExistsException;
+import com.want2play.want2play.exception.W2PEntityNotFoundException;
 import com.want2play.want2play.model.City;
 import com.want2play.want2play.model.Country;
 import com.want2play.want2play.model.State;
@@ -23,17 +25,19 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private LocationService adminService;
 
-    private Country insertCountry(Country country) {
+    private Country insertCountry(Country country) throws W2PEntityExistsException {
         return adminService.saveCountry(country);
-    }
-
-    private void insertCountries(Country... countries) {
-        Arrays.stream(countries).forEach(c -> insertCountry(c));
     }
 
     @BeforeEach
     public void cleanCountries() {
-        adminService.getAllCountries().stream().forEach(c -> adminService.deleteCountry(c.getCode()));
+        adminService.getAllCountries().stream().forEach(c -> {
+            try {
+                adminService.deleteCountry(c.getCode());
+            } catch (W2PEntityNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Nested
@@ -62,7 +66,7 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Add a duplicated Country")
-        public void saveDuplicatedCountry() {
+        public void saveDuplicatedCountry() throws W2PEntityExistsException {
             // given
             Country expectedCountry = new Country.Builder()
                     .withCode("SPN").withName("Spain")
@@ -79,7 +83,7 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Return a Country by ID")
-        public void returnCountryById() {
+        public void returnCountryById() throws W2PEntityExistsException {
             // given
             Country expectedCountry = new Country.Builder()
                     .withCode("SPN").withName("Spain")
@@ -109,17 +113,16 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Return all Countries")
-        public void returnAllCountries() {
+        public void returnAllCountries() throws W2PEntityExistsException {
             // given
-            insertCountries(
-                    new Country.Builder()
-                            .withCode("ARG").withName("Argentina")
-                            .withState(new State("Entre Rios")
-                                    , Arrays.asList(new City("Parana"))).build(),
-                    new Country.Builder()
-                            .withCode("URU").withName("Uruguay")
-                            .withState(new State("Montevideo")
-                                    , Arrays.asList(new City("Montevideo"))).build());
+            insertCountry(new Country.Builder()
+                    .withCode("ARG").withName("Argentina")
+                    .withState(new State("Entre Rios")
+                            , Arrays.asList(new City("Parana"))).build());
+            insertCountry(new Country.Builder()
+                    .withCode("URU").withName("Uruguay")
+                    .withState(new State("Montevideo")
+                            , Arrays.asList(new City("Montevideo"))).build());
 
             // when
             ResponseEntity<Country[]> savedCountryResponse = restTemplate.getForEntity("/locations", Country[].class);
@@ -140,7 +143,7 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Add a State")
-        public void addNewState() {
+        public void addNewState() throws W2PEntityExistsException {
             // given
             Country expectedCountry = new Country.Builder()
                     .withCode("SPN").withName("Spain")
@@ -172,7 +175,7 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Add a duplicated State")
-        public void addDuplicatedState() {
+        public void addDuplicatedState() throws W2PEntityExistsException {
             // given
             Country expectedCountry = new Country.Builder()
                     .withCode("SPN").withName("Spain")
@@ -193,7 +196,7 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Add a City")
-        public void addNewCity() {
+        public void addNewCity() throws W2PEntityExistsException {
             // given
             Country expectedCountry = new Country.Builder()
                     .withCode("SPN").withName("Spain")
@@ -217,7 +220,7 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Add a city to an invalid State")
-        public void addNewCityToInvalidState() {
+        public void addNewCityToInvalidState() throws W2PEntityExistsException {
             // given
             Country expectedCountry = new Country.Builder()
                     .withCode("SPN").withName("Spain")
@@ -234,7 +237,7 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Add a duplicated City")
-        public void addDuplicatedCity() {
+        public void addDuplicatedCity() throws W2PEntityExistsException {
             // given
             Country expectedCountry = new Country.Builder()
                     .withCode("SPN").withName("Spain")

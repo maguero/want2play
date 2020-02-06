@@ -1,7 +1,7 @@
 package com.want2play.want2play.service;
 
 import com.want2play.want2play.exception.W2PEntityExistsException;
-import com.want2play.want2play.exception.W2PNotFoundException;
+import com.want2play.want2play.exception.W2PEntityNotFoundException;
 import com.want2play.want2play.model.Match;
 import com.want2play.want2play.model.MatchStates;
 import com.want2play.want2play.repository.MatchRepository;
@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,20 +25,17 @@ public class MatchService {
         return matchRepository.findAll();
     }
 
-    public Match getById(String id) {
-        Optional<Match> matchById = matchRepository.findById(id);
-        if (matchById.isEmpty()) {
-            throw new W2PNotFoundException();
-        }
-        return matchById.get();
+    public Match getById(String id) throws W2PEntityNotFoundException {
+        return matchRepository.findById(id)
+                .orElseThrow(() -> new W2PEntityNotFoundException(String.format("Match #%s not found.", id)));
     }
 
-    public Match saveMatch(Match match) {
+    public Match saveMatch(Match match) throws W2PEntityExistsException {
         if (StringUtils.isBlank(match.getId())) {
             match.setId(UUID.randomUUID().toString());
         }
         if (matchRepository.existsById(match.getId())) {
-            throw new W2PEntityExistsException();
+            throw new W2PEntityExistsException(String.format("Match #%s already exists.", match.getId()));
         }
         if (match.getState() == null) {
             match.setState(MatchStates.NEW);
@@ -52,12 +48,11 @@ public class MatchService {
         throw new NotImplementedException();
     }
 
-    public void deleteMatch(String matchId) {
-        Optional<Match> match = matchRepository.findById(matchId);
-        if (match.isEmpty()) {
-            throw new W2PNotFoundException();
+    public void deleteMatch(String matchId) throws W2PEntityNotFoundException {
+        if (!matchRepository.existsById(matchId)) {
+            throw new W2PEntityNotFoundException(String.format("Match #%s not found.", matchId));
         }
-        matchRepository.delete(match.get());
+        matchRepository.deleteById(matchId);
     }
 
     public List<Match> getMatchesByAdminPlayer(String adminPlayerId) {

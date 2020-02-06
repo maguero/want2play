@@ -1,10 +1,16 @@
 package com.want2play.want2play.controller;
 
 import com.want2play.want2play.dto.PlayerDto;
+import com.want2play.want2play.exception.W2PEntityExistsException;
 import com.want2play.want2play.exception.W2PEntityNotFoundException;
 import com.want2play.want2play.service.PlayerService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +50,12 @@ public class PlayerController {
     @RequestMapping(method = RequestMethod.POST)
     public PlayerDto insertPlayer(@RequestBody @Valid PlayerDto player, HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_CREATED);
-        return service.insertPlayer(player);
+        try {
+            return service.insertPlayer(player);
+        } catch (W2PEntityExistsException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, e.getMessage(), e);
+        }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)

@@ -2,7 +2,7 @@ package com.want2play.want2play.service.impl;
 
 import com.want2play.want2play.dto.SportDto;
 import com.want2play.want2play.exception.W2PEntityExistsException;
-import com.want2play.want2play.exception.W2PNotFoundException;
+import com.want2play.want2play.exception.W2PEntityNotFoundException;
 import com.want2play.want2play.model.Sport;
 import com.want2play.want2play.repository.SportRepository;
 import com.want2play.want2play.service.SportService;
@@ -33,36 +33,37 @@ public class SportServiceImpl implements SportService {
         );
     }
 
-    public SportDto getSportById(String id) {
+    public SportDto getSportById(String id) throws W2PEntityNotFoundException {
         return convertToDto(
-                sportRepository.findById(id).orElseThrow(() -> new W2PNotFoundException())
+                sportRepository.findById(id)
+                        .orElseThrow(() -> new W2PEntityNotFoundException(String.format("Sport #%s not found.", id)))
         );
     }
 
-    public SportDto insertSport(SportDto sport) {
+    public SportDto insertSport(SportDto sport) throws W2PEntityExistsException {
         if (sportRepository.existsById(sport.getId())) {
-            throw new W2PEntityExistsException();
+            throw new W2PEntityExistsException(String.format("Sport #%s already exists.", sport.getId()));
         }
         return convertToDto(
                 sportRepository.save(convertToEntity(sport))
         );
     }
 
-    public SportDto updateSport(SportDto sport) {
+    public SportDto updateSport(SportDto sport) throws W2PEntityNotFoundException {
         checkIfSportExistsOrThrowException(sport.getId());
         return convertToDto(
                 sportRepository.save(convertToEntity(sport))
         );
     }
 
-    public void deleteSport(String id) {
+    public void deleteSport(String id) throws W2PEntityNotFoundException {
         checkIfSportExistsOrThrowException(id);
         sportRepository.deleteById(id);
     }
 
-    private void checkIfSportExistsOrThrowException(String sportId) {
+    private void checkIfSportExistsOrThrowException(String sportId) throws W2PEntityNotFoundException {
         if (!sportRepository.existsById(sportId)) {
-            throw new W2PNotFoundException();
+            throw new W2PEntityNotFoundException(String.format("Sport #%s not found.", sportId));
         }
     }
 

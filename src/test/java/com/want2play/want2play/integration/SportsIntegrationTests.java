@@ -1,6 +1,8 @@
 package com.want2play.want2play.integration;
 
 import com.want2play.want2play.dto.SportDto;
+import com.want2play.want2play.exception.W2PEntityExistsException;
+import com.want2play.want2play.exception.W2PEntityNotFoundException;
 import com.want2play.want2play.service.SportService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,13 +25,19 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
     @Autowired
     private SportService sportService;
 
-    private SportDto insertSport(SportDto sport) {
+    private SportDto insertSport(SportDto sport) throws W2PEntityExistsException {
         return sportService.insertSport(sport);
     }
 
     @BeforeEach
     public void cleanSports() {
-        sportService.getAllSports().forEach(sport -> sportService.deleteSport(sport.getId()));
+        sportService.getAllSports().forEach(sport -> {
+            try {
+                sportService.deleteSport(sport.getId());
+            } catch (W2PEntityNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Nested
@@ -66,7 +74,7 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Error inserting a duplicate sport")
-        public void insertDuplicateSport() {
+        public void insertDuplicateSport() throws W2PEntityExistsException {
             // given
             insertSport(new SportDto("BSK", "Basketball", 5));
 
@@ -80,7 +88,7 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Update a sport")
-        public void updateSport() {
+        public void updateSport() throws W2PEntityExistsException {
             // given
             SportDto expectedSport = insertSport(new SportDto("BSK", "Basketball", 5));
 
@@ -95,7 +103,7 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Error updating a sport")
-        public void updateNonCompleteSport() {
+        public void updateNonCompleteSport() throws W2PEntityExistsException {
             // given
             SportDto expectedSport = insertSport(new SportDto("BSK", "Basketball", 5));
 
@@ -109,7 +117,7 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Delete a sport")
-        public void deleteSport() {
+        public void deleteSport() throws W2PEntityExistsException {
             // given
             insertSport(new SportDto("BSK", "Basketball", 5));
 
@@ -137,7 +145,7 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Get all sports")
-        public void getAllSports() {
+        public void getAllSports() throws W2PEntityExistsException {
             // given
             insertSport(new SportDto("BSK", "Basketball", 5));
             insertSport(new SportDto("TNS2", "Tennis - Double", 2));
@@ -154,7 +162,7 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Get a sport by ID")
-        public void getSportById() {
+        public void getSportById() throws W2PEntityExistsException {
             // given
             insertSport(new SportDto("BSK", "Basketball", 5));
             insertSport(new SportDto("TNS2", "Tennis - Double", 2));
@@ -179,7 +187,7 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Get sports by Name")
-        public void getSportsByName() {
+        public void getSportsByName() throws W2PEntityExistsException {
             // given
             insertSport(new SportDto("BSK", "Basketball", 5));
             insertSport(new SportDto("TNS2", "Tennis - Double", 2));

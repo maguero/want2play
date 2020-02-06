@@ -1,6 +1,7 @@
 package com.want2play.want2play.integration;
 
 import com.want2play.want2play.dto.PlayerDto;
+import com.want2play.want2play.exception.W2PEntityExistsException;
 import com.want2play.want2play.exception.W2PEntityNotFoundException;
 import com.want2play.want2play.service.PlayerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,7 @@ public class PlayersIntegrationTests extends AbstractIntegrationTest {
     @Autowired
     private PlayerService playerService;
 
-    private PlayerDto insertPlayer(PlayerDto player) {
+    private PlayerDto insertPlayer(PlayerDto player) throws W2PEntityExistsException {
         return playerService.insertPlayer(player);
 
     }
@@ -73,7 +74,7 @@ public class PlayersIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Error inserting a duplicate player")
-        public void insertDuplicatePlayer() {
+        public void insertDuplicatePlayer() throws W2PEntityExistsException {
             // given
             insertPlayer(new PlayerDto("john.doe@w2p.com", "John Doe"));
 
@@ -87,7 +88,7 @@ public class PlayersIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Update a player")
-        public void updatePlayer() {
+        public void updatePlayer() throws W2PEntityExistsException {
             // given
             insertPlayer(new PlayerDto("john.doe@w2p.com", "John Doe"));
 
@@ -105,9 +106,9 @@ public class PlayersIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Error updating a player")
-        public void updateNonCompletePlayer() {
+        public void updateNonCompletePlayer() throws W2PEntityExistsException {
             // given
-            PlayerDto expectedPlayer = insertPlayer(new PlayerDto("john.doe@w2p.com", "John Doe"));
+            insertPlayer(new PlayerDto("john.doe@w2p.com", "John Doe"));
 
             // when
             ResponseEntity<PlayerDto> actualPlayer = restTemplate.exchange(
@@ -122,7 +123,7 @@ public class PlayersIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Delete a player")
-        public void deletePlayer() {
+        public void deletePlayer() throws W2PEntityExistsException {
             // given
             insertPlayer(new PlayerDto("john.doe@w2p.com", "John Doe"));
 
@@ -150,7 +151,7 @@ public class PlayersIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Get all players")
-        public void getAllPlayers() {
+        public void getAllPlayers() throws W2PEntityExistsException {
             // given
             insertPlayer(new PlayerDto("john.doe@w2p.com", "John Doe"));
             insertPlayer(new PlayerDto("johnny.depp@w2p.com", "Johnny Depp"));
@@ -167,7 +168,7 @@ public class PlayersIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Get a player by ID")
-        public void getPlayerById() {
+        public void getPlayerById() throws W2PEntityExistsException {
             // given
             insertPlayer(new PlayerDto("john.doe@w2p.com", "John Doe"));
             insertPlayer(new PlayerDto("johnny.depp@w2p.com", "Johnny Depp"));
@@ -192,7 +193,7 @@ public class PlayersIntegrationTests extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Get players by Name")
-        public void getPlayersByName() {
+        public void getPlayersByName() throws W2PEntityExistsException {
             // given
             insertPlayer(new PlayerDto("john.doe@w2p.com", "John Doe"));
             insertPlayer(new PlayerDto("johnny.depp@w2p.com", "Johnny Depp"));

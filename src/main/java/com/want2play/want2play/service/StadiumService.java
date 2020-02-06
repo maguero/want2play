@@ -1,13 +1,12 @@
 package com.want2play.want2play.service;
 
 import com.want2play.want2play.exception.W2PEntityExistsException;
-import com.want2play.want2play.exception.W2PNotFoundException;
+import com.want2play.want2play.exception.W2PEntityNotFoundException;
 import com.want2play.want2play.model.Stadium;
 import com.want2play.want2play.repository.StadiumRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StadiumService {
@@ -22,38 +21,35 @@ public class StadiumService {
         return stadiumRepository.findAll();
     }
 
-    public Stadium getStadiumById(String id) {
-        Optional<Stadium> stadiumById = stadiumRepository.findById(id);
-        if (stadiumById.isEmpty()) {
-            throw new W2PNotFoundException();
-        }
-        return stadiumById.get();
+    public Stadium getStadiumById(String id) throws W2PEntityNotFoundException {
+        return stadiumRepository.findById(id)
+                .orElseThrow(() -> new W2PEntityNotFoundException(String.format("Stadium #%s not found.", id)));
     }
 
     public List<Stadium> getStadiumsByCity(String city) {
         return stadiumRepository.findByCity(city);
     }
 
-    public Stadium insertStadium(Stadium stadium) {
+    public Stadium insertStadium(Stadium stadium) throws W2PEntityExistsException {
         if (stadiumRepository.existsById(stadium.getId())) {
-            throw new W2PEntityExistsException();
+            throw new W2PEntityExistsException(String.format("Stadium #%s already exists.", stadium.getId()));
         }
         return stadiumRepository.save(stadium);
     }
 
-    public Stadium updateStadium(Stadium stadium) {
+    public Stadium updateStadium(Stadium stadium) throws W2PEntityNotFoundException {
         checkIfStadiumExistsOrThrowException(stadium.getId());
         return stadiumRepository.save(stadium);
     }
 
-    public void deleteStadium(String id) {
+    public void deleteStadium(String id) throws W2PEntityNotFoundException {
         checkIfStadiumExistsOrThrowException(id);
         stadiumRepository.deleteById(id);
     }
 
-    private void checkIfStadiumExistsOrThrowException(String stadiumId) {
+    private void checkIfStadiumExistsOrThrowException(String stadiumId) throws W2PEntityNotFoundException {
         if (!stadiumRepository.existsById(stadiumId)) {
-            throw new W2PNotFoundException();
+            throw new W2PEntityNotFoundException(String.format("Stadium #%s not found.", stadiumId));
         }
     }
 }
