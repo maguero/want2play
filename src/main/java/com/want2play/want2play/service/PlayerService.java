@@ -1,60 +1,22 @@
 package com.want2play.want2play.service;
 
-import com.want2play.want2play.exception.W2PEntityExistsException;
-import com.want2play.want2play.exception.W2PNotFoundException;
-import com.want2play.want2play.model.Player;
-import com.want2play.want2play.repository.PlayerRepository;
-import org.springframework.stereotype.Service;
+import com.want2play.want2play.dto.PlayerDto;
+import com.want2play.want2play.exception.W2PEntityNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
-@Service
-public class PlayerService {
+public interface PlayerService {
 
-    private PlayerRepository playerRepository;
+    List<PlayerDto> getAllPlayers();
 
-    public PlayerService(PlayerRepository playerRepository) {
-        this.playerRepository = playerRepository;
-    }
+    List<PlayerDto> getPlayersByName(String name);
 
-    public List<Player> getAllPlayers() {
-        return playerRepository.findAll();
-    }
+    PlayerDto getPlayerById(String id) throws W2PEntityNotFoundException;
 
-    public List<Player> getPlayersByName(String name) {
-        return playerRepository.findByNameContaining(name);
-    }
+    PlayerDto insertPlayer(PlayerDto player);
 
-    public Player getPlayerById(String id) {
-        Optional<Player> playerById = playerRepository.findById(id);
-        if (playerById.isEmpty()) {
-            throw new W2PNotFoundException();
-        }
-        return playerById.get();
-    }
+    PlayerDto updatePlayer(String playerId, PlayerDto.PlayerUpdateDto player) throws W2PEntityNotFoundException;
 
-    public Player insertPlayer(Player player) {
-        if (playerRepository.existsById(player.getId())) {
-            throw new W2PEntityExistsException();
-        }
-        return playerRepository.save(player);
-    }
-
-    public Player updatePlayer(Player player) {
-        Optional<Player> playerById = playerRepository.findById(player.getId());
-        if (playerById.isEmpty()) {
-            throw new W2PNotFoundException();
-        }
-        return playerRepository.save(player);
-    }
-
-    public void deletePlayer(String id) {
-        Optional<Player> playerById = playerRepository.findById(id);
-        if (playerById.isEmpty()) {
-            throw new W2PNotFoundException();
-        }
-        playerRepository.delete(playerById.get());
-    }
+    void deletePlayer(String playerId) throws W2PEntityNotFoundException;
 
 }

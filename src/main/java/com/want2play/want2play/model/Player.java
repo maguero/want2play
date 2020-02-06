@@ -3,16 +3,15 @@ package com.want2play.want2play.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
-import java.util.Objects;
-
 @Document(collection = "players")
 public class Player {
 
     @Id
     private String id;
-    @NotNull
     private String name;
+
+    public Player() {
+    }
 
     public Player(String id, String name) {
         this.id = id;
@@ -35,17 +34,4 @@ public class Player {
         this.name = name;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Player player = (Player) o;
-        return Objects.equals(id, player.id) &&
-                Objects.equals(name, player.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
-    }
 }
