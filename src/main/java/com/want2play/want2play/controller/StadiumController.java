@@ -1,11 +1,10 @@
 package com.want2play.want2play.controller;
 
+import com.want2play.want2play.dto.FieldDto;
+import com.want2play.want2play.dto.StadiumDto;
 import com.want2play.want2play.exception.W2PEntityExistsException;
 import com.want2play.want2play.exception.W2PEntityNotFoundException;
-import com.want2play.want2play.model.Field;
-import com.want2play.want2play.model.Stadium;
 import com.want2play.want2play.service.StadiumService;
-import org.apache.commons.lang.NotImplementedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,12 +29,12 @@ public class StadiumController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Stadium> getAll() {
+    public List<StadiumDto> getAll() {
         return service.getAllStadiums();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Stadium getById(@PathVariable("id") String id) {
+    public StadiumDto getById(@PathVariable("id") String id) {
         try {
             return service.getStadiumById(id);
         } catch (W2PEntityNotFoundException e) {
@@ -45,12 +44,12 @@ public class StadiumController {
     }
 
     @RequestMapping(value = "/", params = "name", method = RequestMethod.GET)
-    public List<Stadium> getAll(@RequestParam("city") String city) {
+    public List<StadiumDto> getAll(@RequestParam("city") String city) {
         return service.getStadiumsByCity(city);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public Stadium saveStadium(@RequestBody @Valid Stadium stadium, HttpServletResponse response) {
+    public StadiumDto saveStadium(@RequestBody @Valid StadiumDto stadium, HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_CREATED);
         try {
             return service.insertStadium(stadium);
@@ -60,10 +59,12 @@ public class StadiumController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
-    public Stadium updateStadium(@RequestBody @Valid Stadium stadium) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public StadiumDto updateStadium(
+            @PathVariable("id") String id,
+            @RequestBody @Valid StadiumDto stadium) {
         try {
-            return service.updateStadium(stadium);
+            return service.updateStadium(id, stadium);
         } catch (W2PEntityNotFoundException e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, e.getMessage(), e);
@@ -81,9 +82,17 @@ public class StadiumController {
         }
     }
 
-    @RequestMapping(value = "/{stadiumId}", method = RequestMethod.POST)
-    public Field saveStadiumField(@PathVariable("stadiumId") String stadiumId, @RequestBody @Valid Field field) {
-        throw new NotImplementedException();
+    @RequestMapping(value = "/{stadiumId}/fields", method = RequestMethod.POST)
+    public StadiumDto addStadiumField(@PathVariable("stadiumId") String stadiumId, @RequestBody @Valid FieldDto field) {
+        try {
+            return service.addStadiumField(stadiumId, field);
+        } catch (W2PEntityNotFoundException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, e.getMessage(), e);
+        } catch (W2PEntityExistsException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, e.getMessage(), e);
+        }
     }
 
 }
