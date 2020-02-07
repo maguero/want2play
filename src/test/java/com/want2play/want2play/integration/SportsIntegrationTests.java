@@ -90,11 +90,11 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
         @DisplayName("Update a sport")
         public void updateSport() throws W2PEntityExistsException {
             // given
-            SportDto expectedSport = insertSport(new SportDto("BSK", "Basketball", 5));
+            insertSport(new SportDto("BSK", "Basketball", 5));
 
             // when
-            expectedSport.setName("new Name");
-            ResponseEntity<SportDto> actualSport = restTemplate.exchange("/sports", HttpMethod.PUT, new HttpEntity<>(expectedSport), SportDto.class);
+            ResponseEntity<SportDto> actualSport = restTemplate.exchange("/sports/BSK", HttpMethod.PUT,
+                    new HttpEntity<>(new SportDto.SportUpdateDto("new Name", 5)), SportDto.class);
 
             // then
             assertThat(actualSport).extracting(ResponseEntity::getStatusCode).isEqualTo(HttpStatus.OK);
@@ -105,11 +105,11 @@ public class SportsIntegrationTests extends AbstractIntegrationTest {
         @DisplayName("Error updating a sport")
         public void updateNonCompleteSport() throws W2PEntityExistsException {
             // given
-            SportDto expectedSport = insertSport(new SportDto("BSK", "Basketball", 5));
+            insertSport(new SportDto("BSK", "Basketball", 5));
 
             // when
-            expectedSport.setName(null);
-            ResponseEntity<SportDto> actualSport = restTemplate.exchange("/sports", HttpMethod.PUT, new HttpEntity<>(expectedSport), SportDto.class);
+            ResponseEntity<SportDto> actualSport = restTemplate.exchange("/sports/BSK", HttpMethod.PUT,
+                    new HttpEntity<>(new SportDto.SportUpdateDto(null, 5)), SportDto.class);
 
             // then
             assertThat(actualSport).extracting(ResponseEntity::getStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);

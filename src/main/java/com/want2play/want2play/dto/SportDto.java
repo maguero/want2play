@@ -62,4 +62,37 @@ public class SportDto {
         return Objects.hash(id, name, playersByTeam);
     }
 
+    public static class SportUpdateDto {
+
+        @NotNull
+        @NotEmpty
+        private String name;
+        @NotNull
+        private Integer playersByTeam;
+
+        public SportUpdateDto() {
+        }
+
+        public SportUpdateDto(String name, Integer playersByTeam) {
+            this.name = name;
+            this.playersByTeam = playersByTeam;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Integer getPlayersByTeam() {
+            return playersByTeam;
+        }
+
+        public void setPlayersByTeam(Integer playersByTeam) {
+            this.playersByTeam = playersByTeam;
+        }
+    }
+
 }

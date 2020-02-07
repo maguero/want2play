@@ -16,7 +16,7 @@ public interface SportService {
 
     SportDto insertSport(SportDto sport) throws W2PEntityExistsException;
 
-    SportDto updateSport(SportDto sport) throws W2PEntityNotFoundException;
+    SportDto updateSport(String id, SportDto.SportUpdateDto sport) throws W2PEntityNotFoundException;
 
     void deleteSport(String id) throws W2PEntityNotFoundException;
 

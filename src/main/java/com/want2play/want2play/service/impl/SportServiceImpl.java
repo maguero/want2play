@@ -49,10 +49,12 @@ public class SportServiceImpl implements SportService {
         );
     }
 
-    public SportDto updateSport(SportDto sport) throws W2PEntityNotFoundException {
-        checkIfSportExistsOrThrowException(sport.getId());
+    public SportDto updateSport(String id, SportDto.SportUpdateDto sport) throws W2PEntityNotFoundException {
+        checkIfSportExistsOrThrowException(id);
+        Sport sportToSave = mapper.map(sport, Sport.class);
+        sportToSave.setId(id);
         return convertToDto(
-                sportRepository.save(convertToEntity(sport))
+                sportRepository.save(sportToSave)
         );
     }
 
