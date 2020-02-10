@@ -3,6 +3,7 @@ package com.want2play.want2play.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class Country {
 
     @Id
     private String code;
+    @NotNull
     private String name;
     private List<State> states;
 

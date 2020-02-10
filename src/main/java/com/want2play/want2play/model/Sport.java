@@ -3,11 +3,14 @@ package com.want2play.want2play.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
+
 @Document(collection = "sports")
 public class Sport {
 
     @Id
     private String id;
+    @NotNull
     private String name;
     private Integer playersByTeam;
 

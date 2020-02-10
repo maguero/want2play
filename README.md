@@ -13,6 +13,7 @@ This service is dockerized and is built and run from [want2play-orchestration](h
 :$ docker image build -t want2play:0.01 .
 :$ docker container run --publish 9001:9001 --detach --name bb want2play:0.01
 ```
+
 To run all tests, execute **mvn clean test** command. The coverage result report can be found at "**target/site/jacoco/index.html**" page.
 
 ## API endpoints

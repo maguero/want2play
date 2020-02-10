@@ -1,13 +1,13 @@
 package com.want2play.want2play.integration;
 
+import com.want2play.want2play.dto.FieldDto;
+import com.want2play.want2play.dto.MatchDto;
+import com.want2play.want2play.dto.PlayerDto;
+import com.want2play.want2play.dto.SportDto;
+import com.want2play.want2play.dto.StadiumDto;
 import com.want2play.want2play.exception.W2PEntityExistsException;
 import com.want2play.want2play.exception.W2PEntityNotFoundException;
-import com.want2play.want2play.model.Field;
-import com.want2play.want2play.model.Match;
 import com.want2play.want2play.model.MatchStates;
-import com.want2play.want2play.model.Player;
-import com.want2play.want2play.model.Sport;
-import com.want2play.want2play.model.Stadium;
 import com.want2play.want2play.service.MatchService;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,8 +29,8 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private MatchService matchService;
 
-    private Match insertMatch(Match match) throws W2PEntityExistsException {
-        return matchService.saveMatch(match);
+    private MatchDto insertMatch(MatchDto match) throws W2PEntityExistsException {
+        return matchService.insertMatch(match);
     }
 
     @BeforeEach
@@ -50,28 +50,28 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
         @DisplayName("Save a new Match")
         public void saveAnInitialMatch() {
             // given
-            Stadium stadium = new Stadium("Madison Square Garden", "5th Ave", "New York");
-            stadium.getFields().add(new Field("Main Arena", new Sport("BSK", "Basketball", 5)));
+            StadiumDto stadium = new StadiumDto("Madison Square Garden", "5th Ave", "New York");
+            stadium.getFields().add(new FieldDto("Main Arena", new SportDto("BSK", "Basketball", 5)));
 
-            List<Player> teamAPlayers = Arrays.asList(
-                    new Player("@1", "Player 1"),
-                    new Player("@2", "Player 2"),
-                    new Player("@3", "Player 3"),
-                    new Player("@4", "Player 4"),
-                    new Player("@5", "Player 5"));
+            List<PlayerDto> teamAPlayers = Arrays.asList(
+                    new PlayerDto("@1", "Player 1"),
+                    new PlayerDto("@2", "Player 2"),
+                    new PlayerDto("@3", "Player 3"),
+                    new PlayerDto("@4", "Player 4"),
+                    new PlayerDto("@5", "Player 5"));
 
-            List<Player> teamBPlayers = Arrays.asList(
-                    new Player("@6", "Player 6"),
-                    new Player("@7", "Player 7"),
-                    new Player("@8", "Player 8"),
-                    new Player("@9", "Player 9"),
-                    new Player("@10", "Player 10"));
+            List<PlayerDto> teamBPlayers = Arrays.asList(
+                    new PlayerDto("@6", "Player 6"),
+                    new PlayerDto("@7", "Player 7"),
+                    new PlayerDto("@8", "Player 8"),
+                    new PlayerDto("@9", "Player 9"),
+                    new PlayerDto("@10", "Player 10"));
 
-            Match expectedMatch = new Match.Builder()
+            MatchDto expectedMatch = new MatchDto.Builder()
                     .withId("ID000")
-                    .withSport(new Sport("BSK", "Basketball", 5))
+                    .withSport(new SportDto("BSK", "Basketball", 5))
                     .withStadium(stadium)
-                    .withAdminPlayer(new Player("@1", "Player 1"))
+                    .withAdminPlayer(new PlayerDto("@1", "Player 1"))
                     .withTeamAPlayers(teamAPlayers)
                     .withTeamBPlayers(teamBPlayers)
                     .withNotes("A test expectedMatch in NY")
@@ -79,41 +79,41 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
                     .build();
 
             // when
-            ResponseEntity<Match> savedMatchResponse = restTemplate.postForEntity("/matches", expectedMatch, Match.class);
+            ResponseEntity<MatchDto> savedMatchResponse = restTemplate.postForEntity("/matches", expectedMatch, MatchDto.class);
             assertThat(savedMatchResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
             // then
-            Match actualMatch = savedMatchResponse.getBody();
+            MatchDto actualMatch = savedMatchResponse.getBody();
             assertThat(actualMatch).isNotNull();
-            assertThat(actualMatch).extracting(Match::getId).isEqualTo("ID000");
-            assertThat(actualMatch).extracting(Match::getNotes).isEqualTo("A test expectedMatch in NY");
-            assertThat(actualMatch).extracting(Match::getState).isEqualTo(MatchStates.NEW);
-            // TODO assertThat(actualMatch).extracting(Match::getSport).isEqualTo(new Sport("BSK", "Basketball", 5));
-            // TODO assertThat(actualMatch).extracting(Match::getAdminPlayer).isEqualTo(new Player("@1", "Player 1"));
+            assertThat(actualMatch).extracting(MatchDto::getId).isEqualTo("ID000");
+            assertThat(actualMatch).extracting(MatchDto::getNotes).isEqualTo("A test expectedMatch in NY");
+            assertThat(actualMatch).extracting(MatchDto::getState).isEqualTo(MatchStates.NEW);
+            assertThat(actualMatch).extracting(MatchDto::getSport).isEqualTo(new SportDto("BSK", "Basketball", 5));
+            assertThat(actualMatch).extracting(MatchDto::getAdminPlayer).isEqualTo(new PlayerDto("@1", "Player 1"));
             assertThat(actualMatch.getTeamA().getPlayers()).hasSize(5);
             assertThat(actualMatch.getTeamB().getPlayers()).hasSize(5);
-            // TODO assertThat(actualMatch).extracting(Match::getStadium).isEqualTo(stadium);
+            assertThat(actualMatch).extracting(MatchDto::getStadium).isEqualTo(stadium);
         }
 
         @Test
         @DisplayName("Error trying to insert a duplicate Match")
         public void errorSavingExistingMatch() throws W2PEntityExistsException {
             // given
-            Match expectedMatch = new Match.Builder()
-                    .withSport(new Sport("BSK", "Basketball", 5))
-                    .withStadium(new Stadium("Madison Squeare Garden", "10th Ave.", "NY"))
-                    .withAdminPlayer(new Player("@1", "Player 1"))
+            MatchDto expectedMatch = new MatchDto.Builder()
+                    .withSport(new SportDto("BSK", "Basketball", 5))
+                    .withStadium(new StadiumDto("Madison Squeare Garden", "10th Ave.", "NY"))
+                    .withAdminPlayer(new PlayerDto("@1", "Player 1"))
                     .withSchedule(DateTime.now().toDate())
                     .build();
             insertMatch(expectedMatch);
 
             // when
-            ResponseEntity<Match> savedMatchResponse = restTemplate.postForEntity("/matches", expectedMatch, Match.class);
+            ResponseEntity<MatchDto> savedMatchResponse = restTemplate.postForEntity("/matches", expectedMatch, MatchDto.class);
             assertThat(savedMatchResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
 
             // then
             assertThrows(W2PEntityExistsException.class, () -> {
-                matchService.saveMatch(expectedMatch);
+                matchService.insertMatch(expectedMatch);
             });
         }
 
@@ -121,18 +121,18 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
         @DisplayName("Delete a Match")
         public void deleteAMatch() throws W2PEntityExistsException {
             // given
-            Match expectedMatch = new Match.Builder()
+            MatchDto expectedMatch = new MatchDto.Builder()
                     .withId("ID001")
-                    .withSport(new Sport("BSK", "Basketball", 5))
-                    .withStadium(new Stadium("Madison Squeare Garden", "10th Ave.", "NY"))
-                    .withAdminPlayer(new Player("@1", "Player 1"))
+                    .withSport(new SportDto("BSK", "Basketball", 5))
+                    .withStadium(new StadiumDto("Madison Squeare Garden", "10th Ave.", "NY"))
+                    .withAdminPlayer(new PlayerDto("@1", "Player 1"))
                     .withSchedule(DateTime.now().toDate())
                     .build();
             insertMatch(expectedMatch);
 
             // when
             restTemplate.delete("/matches/ID001");
-            ResponseEntity<Match> deletedMatch = restTemplate.getForEntity("/matches/ID001", Match.class);
+            ResponseEntity<MatchDto> deletedMatch = restTemplate.getForEntity("/matches/ID001", MatchDto.class);
 
             // then
             assertThat(deletedMatch.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -143,17 +143,17 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
     class GettingMatches {
 
         @Test
-        @DisplayName("Return a Match by ID")
+        @DisplayName("Return a MatchDto by ID")
         public void returnMatchById() throws W2PEntityExistsException {
             // given
-            insertMatch(new Match("ID001"));
+            insertMatch(new MatchDto("ID001"));
 
             // when
-            ResponseEntity<Match> matchesResponse = restTemplate.getForEntity("/matches/ID001", Match.class);
+            ResponseEntity<MatchDto> matchesResponse = restTemplate.getForEntity("/matches/ID001", MatchDto.class);
 
             // then
             assertThat(matchesResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(matchesResponse.getBody()).extracting(Match::getId).isEqualTo("ID001");
+            assertThat(matchesResponse.getBody()).extracting(MatchDto::getId).isEqualTo("ID001");
         }
 
         @Test
@@ -161,25 +161,25 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
         public void returnsMatchesByAdminPlayer() throws W2PEntityExistsException {
 
             // given
-            Match firstMatch = new Match("ID002");
-            firstMatch.setAdminPlayer(new Player("john.doe@want2play.com", "John Doe"));
+            MatchDto firstMatch = new MatchDto("ID002");
+            firstMatch.setAdminPlayer(new PlayerDto("john.doe@want2play.com", "John Doe"));
             insertMatch(firstMatch);
-            Match secondMatch = new Match("ID003");
-            secondMatch.setAdminPlayer(new Player("michael.doe@want2play.com", "Michael Doe"));
+            MatchDto secondMatch = new MatchDto("ID003");
+            secondMatch.setAdminPlayer(new PlayerDto("michael.doe@want2play.com", "Michael Doe"));
             insertMatch(secondMatch);
-            Match thirdMatch = new Match("ID004");
-            thirdMatch.setAdminPlayer(new Player("john.doe@want2play.com", "John Doe"));
+            MatchDto thirdMatch = new MatchDto("ID004");
+            thirdMatch.setAdminPlayer(new PlayerDto("john.doe@want2play.com", "John Doe"));
             insertMatch(thirdMatch);
 
             // when
-            ResponseEntity<Match[]> matchesResponse = restTemplate.getForEntity("/matches/?adminPlayer=john.doe@want2play.com", Match[].class);
+            ResponseEntity<MatchDto[]> matchesResponse = restTemplate.getForEntity("/matches/?adminPlayer=john.doe@want2play.com", MatchDto[].class);
 
             // then
             assertThat(matchesResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(matchesResponse.getBody()).isNotEmpty();
             assertThat(matchesResponse.getBody()).hasSize(2);
-            assertThat(matchesResponse.getBody()[0]).extracting(Match::getId).isEqualTo("ID002");
-            assertThat(matchesResponse.getBody()[1]).extracting(Match::getId).isEqualTo("ID004");
+            assertThat(matchesResponse.getBody()[0]).extracting(MatchDto::getId).isEqualTo("ID002");
+            assertThat(matchesResponse.getBody()[1]).extracting(MatchDto::getId).isEqualTo("ID004");
         }
 
         @Test
@@ -187,21 +187,21 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
         public void returnsMatchesByState() throws W2PEntityExistsException {
 
             // given
-            Match firstMatch = new Match("ID005");
+            MatchDto firstMatch = new MatchDto("ID005");
             firstMatch.setState(MatchStates.FULL);
             insertMatch(firstMatch);
-            Match secondMatch = new Match("ID006");
+            MatchDto secondMatch = new MatchDto("ID006");
             secondMatch.setState(MatchStates.CANCELLED);
             insertMatch(secondMatch);
 
             // when
-            ResponseEntity<Match[]> matchesResponse = restTemplate.getForEntity("/matches/?state=CANCELLED", Match[].class);
+            ResponseEntity<MatchDto[]> matchesResponse = restTemplate.getForEntity("/matches/?state=CANCELLED", MatchDto[].class);
 
             // then
             assertThat(matchesResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(matchesResponse.getBody()).isNotEmpty();
             assertThat(matchesResponse.getBody()).hasSize(1);
-            assertThat(matchesResponse.getBody()[0]).extracting(Match::getId).isEqualTo("ID006");
+            assertThat(matchesResponse.getBody()[0]).extracting(MatchDto::getId).isEqualTo("ID006");
         }
 
         @Test
@@ -209,25 +209,25 @@ public class MatchesIntegrationTest extends AbstractIntegrationTest {
         public void returnsMatchesByCityAndSport() throws W2PEntityExistsException {
 
             // given
-            Match firstMatch = new Match("ID007");
+            MatchDto firstMatch = new MatchDto("ID007");
             firstMatch.setState(MatchStates.FULL);
-            firstMatch.setSport(new Sport("soccer", "Soccer", 11));
-            firstMatch.setStadium(new Stadium("Joan Miro", null, "Barcelona"));
+            firstMatch.setSport(new SportDto("soccer", "Soccer", 11));
+            firstMatch.setStadium(new StadiumDto("Joan Miro", null, "Barcelona"));
             insertMatch(firstMatch);
-            Match secondMatch = new Match("ID008");
+            MatchDto secondMatch = new MatchDto("ID008");
             secondMatch.setState(MatchStates.OPEN);
-            secondMatch.setSport(new Sport("basket", "Basketball", 5));
-            secondMatch.setStadium(new Stadium("The Stadium", null, "Barcelona"));
+            secondMatch.setSport(new SportDto("basket", "Basketball", 5));
+            secondMatch.setStadium(new StadiumDto("The Stadium", null, "Barcelona"));
             insertMatch(secondMatch);
 
             // when
-            ResponseEntity<Match[]> matchesResponse = restTemplate.getForEntity("/matches/?city=Barcelona&sport=basket", Match[].class);
+            ResponseEntity<MatchDto[]> matchesResponse = restTemplate.getForEntity("/matches/?city=Barcelona&sport=basket", MatchDto[].class);
 
             // then
             assertThat(matchesResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(matchesResponse.getBody()).isNotEmpty();
             assertThat(matchesResponse.getBody()).hasSize(1);
-            assertThat(matchesResponse.getBody()[0]).extracting(Match::getId).isEqualTo("ID008");
+            assertThat(matchesResponse.getBody()[0]).extracting(MatchDto::getId).isEqualTo("ID008");
         }
     }
 

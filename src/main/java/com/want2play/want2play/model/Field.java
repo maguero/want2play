@@ -7,7 +7,6 @@ import java.util.Objects;
 public class Field {
 
     @NotNull
-    @NotEmpty
     private String name;
     @NotNull
     private Sport sport;

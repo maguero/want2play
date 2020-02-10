@@ -7,6 +7,9 @@ public class City {
     @NotNull
     private String name;
 
+    public City() {
+    }
+
     public City(String name) {
         this.name = name;
     }
@@ -17,9 +20,6 @@ public class City {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public City() {
     }
 
 }
