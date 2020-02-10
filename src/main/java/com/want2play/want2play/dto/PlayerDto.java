@@ -52,15 +52,15 @@ public class PlayerDto {
 
     public static class PlayerUpdateDto {
 
+        @NotNull
+        private String name;
+
         public PlayerUpdateDto() {
         }
 
         public PlayerUpdateDto(String name) {
             this.name = name;
         }
-
-        @NotNull
-        private String name;
 
         public String getName() {
             return name;

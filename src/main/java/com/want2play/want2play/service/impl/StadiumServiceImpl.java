@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +43,9 @@ public class StadiumServiceImpl implements StadiumService {
     }
 
     public StadiumDto insertStadium(StadiumDto stadium) throws W2PEntityExistsException {
+        if (Objects.isNull(stadium.getId())) {
+            stadium.setId(UUID.randomUUID().toString());
+        }
         if (stadiumRepository.existsById(stadium.getId())) {
             throw new W2PEntityExistsException(String.format("Stadium #%s already exists.", stadium.getId()));
         }

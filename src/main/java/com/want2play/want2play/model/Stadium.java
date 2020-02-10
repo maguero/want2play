@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Document(collection = "stadiums")
 public class Stadium {
@@ -22,14 +21,6 @@ public class Stadium {
     private List<Field> fields;
 
     public Stadium() {
-    }
-
-    public Stadium(String name, String address, String city) {
-        this.id = UUID.randomUUID().toString();
-        this.name = name;
-        this.address = address;
-        this.city = city;
-        this.fields = new ArrayList<>();
     }
 
     public String getId() {

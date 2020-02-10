@@ -20,7 +20,6 @@ public class StadiumDto {
     }
 
     public StadiumDto(String name, String address, String city) {
-        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.address = address;
         this.city = city;
