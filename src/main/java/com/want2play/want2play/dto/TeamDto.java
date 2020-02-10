@@ -1,20 +1,18 @@
-package com.want2play.want2play.model;
+package com.want2play.want2play.dto;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Team {
+public class TeamDto {
 
-    @NotNull
     private int numberOfPlayers;
-    private List<Player> players;
+    private List<PlayerDto> players;
 
-    public Team() {
+    public TeamDto() {
         this.players = new ArrayList<>();
     }
 
-    public Team(int numberOfPlayers) {
+    public TeamDto(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
         this.players = new ArrayList<>();
     }
@@ -27,11 +25,11 @@ public class Team {
         this.numberOfPlayers = numberOfPlayers;
     }
 
-    public List<Player> getPlayers() {
+    public List<PlayerDto> getPlayers() {
         return players;
     }
 
-    public void setPlayers(List<Player> players) {
+    public void setPlayers(List<PlayerDto> players) {
         this.players = players;
     }
 }

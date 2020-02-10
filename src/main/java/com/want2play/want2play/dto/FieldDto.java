@@ -1,19 +1,21 @@
-package com.want2play.want2play.model;
+package com.want2play.want2play.dto;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
-public class Field {
+public class FieldDto {
 
     @NotNull
+    @NotEmpty
     private String name;
     @NotNull
-    private Sport sport;
+    private SportDto sport;
 
-    public Field() {
+    public FieldDto() {
     }
 
-    public Field(String name, Sport sport) {
+    public FieldDto(@NotNull @NotEmpty String name, @NotNull SportDto sport) {
         this.name = name;
         this.sport = sport;
     }
@@ -26,11 +28,11 @@ public class Field {
         this.name = name;
     }
 
-    public Sport getSport() {
+    public SportDto getSport() {
         return sport;
     }
 
-    public void setSport(Sport sport) {
+    public void setSport(SportDto sport) {
         this.sport = sport;
     }
 
@@ -38,9 +40,9 @@ public class Field {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Field field = (Field) o;
-        return Objects.equals(name, field.name) &&
-                Objects.equals(sport, field.sport);
+        FieldDto fieldDto = (FieldDto) o;
+        return Objects.equals(name, fieldDto.name) &&
+                Objects.equals(sport, fieldDto.sport);
     }
 
     @Override

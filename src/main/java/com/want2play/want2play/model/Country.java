@@ -11,7 +11,6 @@ import java.util.List;
 public class Country {
 
     @Id
-    @NotNull
     private String code;
     @NotNull
     private String name;
@@ -49,42 +48,6 @@ public class Country {
 
     public void setStates(List<State> states) {
         this.states = states;
-    }
-
-    public static class Builder {
-        private Country country;
-        private String code;
-        private String name;
-        private List<State> states;
-
-        public Builder() {
-            this.country = new Country(null, null);
-            this.states = new ArrayList<>();
-        }
-
-        public Builder withCode(String code) {
-            this.code = code;
-            return this;
-        }
-
-        public Builder withName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder withState(State state, List<City> cities) {
-            state.getCities().addAll(cities);
-            this.states.add(state);
-            return this;
-        }
-
-        public Country build() {
-            country.setCode(this.code);
-            country.setName(this.name);
-            country.setStates(this.states);
-            return country;
-        }
-
     }
 
 }

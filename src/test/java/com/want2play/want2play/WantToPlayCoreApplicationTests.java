@@ -35,7 +35,7 @@ class WantToPlayCoreApplicationTests {
     private StadiumService stadiumService;
 
     @Test
-    void contextLoads() {
+    public void contextLoads() {
         assertThat(locationService).isNotNull();
         assertThat(matchService).isNotNull();
         assertThat(sportService).isNotNull();

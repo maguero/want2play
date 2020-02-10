@@ -1,16 +1,13 @@
-package com.want2play.want2play.model;
+package com.want2play.want2play.dto;
 
 import javax.validation.constraints.NotNull;
 
-public class City {
+public class CityDto {
 
     @NotNull
     private String name;
 
-    public City() {
-    }
-
-    public City(String name) {
+    public CityDto(String name) {
         this.name = name;
     }
 
@@ -20,6 +17,9 @@ public class City {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public CityDto() {
     }
 
 }

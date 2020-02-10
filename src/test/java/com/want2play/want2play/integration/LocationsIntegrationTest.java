@@ -1,8 +1,10 @@
 package com.want2play.want2play.integration;
 
-import com.want2play.want2play.model.City;
-import com.want2play.want2play.model.Country;
-import com.want2play.want2play.model.State;
+import com.want2play.want2play.dto.CityDto;
+import com.want2play.want2play.dto.CountryDto;
+import com.want2play.want2play.dto.StateDto;
+import com.want2play.want2play.exception.W2PEntityExistsException;
+import com.want2play.want2play.exception.W2PEntityNotFoundException;
 import com.want2play.want2play.service.LocationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,17 +25,19 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private LocationService adminService;
 
-    private Country insertCountry(Country country) {
-        return adminService.saveCountry(country);
-    }
-
-    private void insertCountries(Country... countries) {
-        Arrays.stream(countries).forEach(c -> insertCountry(c));
+    private CountryDto insertCountry(CountryDto country) throws W2PEntityExistsException {
+        return adminService.insertCountry(country);
     }
 
     @BeforeEach
     public void cleanCountries() {
-        adminService.getAllCountries().stream().forEach(c -> adminService.deleteCountry(c.getCode()));
+        adminService.getAllCountries().stream().forEach(c -> {
+            try {
+                adminService.deleteCountry(c.getCode());
+            } catch (W2PEntityNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Nested
@@ -43,65 +47,65 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
         @DisplayName("Add a Country")
         public void saveCountry() {
             // given
-            Country expectedCountry = new Country.Builder()
+            CountryDto expectedCountry = new CountryDto.Builder()
                     .withCode("SPN").withName("Spain")
-                    .withState(new State("Barcelona")
-                            , Arrays.asList(new City("Barcelona"), new City("Badalona"))).build();
+                    .withState(new StateDto("Barcelona")
+                            , Arrays.asList(new CityDto("Barcelona"), new CityDto("Badalona"))).build();
 
             // when
-            ResponseEntity<Country> savedCountryResponse = restTemplate.postForEntity("/locations", expectedCountry, Country.class);
+            ResponseEntity<CountryDto> savedCountryResponse = restTemplate.postForEntity("/locations", expectedCountry, CountryDto.class);
             assertThat(savedCountryResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
             // then
-            Country actualCountry = savedCountryResponse.getBody();
+            CountryDto actualCountry = savedCountryResponse.getBody();
             assertThat(actualCountry).isNotNull();
-            assertThat(actualCountry).extracting(Country::getCode).isEqualTo("SPN");
-            assertThat(actualCountry).extracting(Country::getName).isEqualTo("Spain");
-            assertThat(actualCountry.getStates().get(0)).extracting(State::getName).isEqualTo("Barcelona");
+            assertThat(actualCountry).extracting(CountryDto::getCode).isEqualTo("SPN");
+            assertThat(actualCountry).extracting(CountryDto::getName).isEqualTo("Spain");
+            assertThat(actualCountry.getStates().get(0)).extracting(StateDto::getName).isEqualTo("Barcelona");
         }
 
         @Test
         @DisplayName("Add a duplicated Country")
-        public void saveDuplicatedCountry() {
+        public void saveDuplicatedCountry() throws W2PEntityExistsException {
             // given
-            Country expectedCountry = new Country.Builder()
+            CountryDto expectedCountry = new CountryDto.Builder()
                     .withCode("SPN").withName("Spain")
-                    .withState(new State("Barcelona")
-                            , Arrays.asList(new City("Barcelona"), new City("Badalona"))).build();
+                    .withState(new StateDto("Barcelona")
+                            , Arrays.asList(new CityDto("Barcelona"), new CityDto("Badalona"))).build();
             insertCountry(expectedCountry);
 
             // when
-            ResponseEntity<Country> savedCountryResponse = restTemplate.postForEntity("/locations", expectedCountry, Country.class);
+            ResponseEntity<CountryDto> savedCountryResponse = restTemplate.postForEntity("/locations", expectedCountry, CountryDto.class);
 
             // then
             assertThat(savedCountryResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         }
 
         @Test
-        @DisplayName("Return a Country by ID")
-        public void returnCountryById() {
+        @DisplayName("Return a CountryDto by ID")
+        public void returnCountryById() throws W2PEntityExistsException {
             // given
-            Country expectedCountry = new Country.Builder()
+            CountryDto expectedCountry = new CountryDto.Builder()
                     .withCode("SPN").withName("Spain")
-                    .withState(new State("Barcelona")
-                            , Arrays.asList(new City("Barcelona"), new City("Badalona"))).build();
+                    .withState(new StateDto("Barcelona")
+                            , Arrays.asList(new CityDto("Barcelona"), new CityDto("Badalona"))).build();
             insertCountry(expectedCountry);
 
             // when
-            ResponseEntity<Country> savedCountryResponse = restTemplate.getForEntity("/locations/SPN", Country.class);
+            ResponseEntity<CountryDto> savedCountryResponse = restTemplate.getForEntity("/locations/SPN", CountryDto.class);
             assertThat(savedCountryResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
             // then
-            Country actualCountry = savedCountryResponse.getBody();
+            CountryDto actualCountry = savedCountryResponse.getBody();
             assertThat(actualCountry).isNotNull();
-            assertThat(actualCountry).extracting(Country::getCode).isEqualTo("SPN");
+            assertThat(actualCountry).extracting(CountryDto::getCode).isEqualTo("SPN");
         }
 
         @Test
         @DisplayName("Return a non existing Country")
         public void returnNonExistingCountry() {
             // when
-            ResponseEntity<Country> savedCountryResponse = restTemplate.getForEntity("/locations/NonExistingID", Country.class);
+            ResponseEntity<CountryDto> savedCountryResponse = restTemplate.getForEntity("/locations/NonExistingID", CountryDto.class);
 
             // then
             assertThat(savedCountryResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -109,28 +113,27 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Return all Countries")
-        public void returnAllCountries() {
+        public void returnAllCountries() throws W2PEntityExistsException {
             // given
-            insertCountries(
-                    new Country.Builder()
-                            .withCode("ARG").withName("Argentina")
-                            .withState(new State("Entre Rios")
-                                    , Arrays.asList(new City("Parana"))).build(),
-                    new Country.Builder()
-                            .withCode("URU").withName("Uruguay")
-                            .withState(new State("Montevideo")
-                                    , Arrays.asList(new City("Montevideo"))).build());
+            insertCountry(new CountryDto.Builder()
+                    .withCode("ARG").withName("Argentina")
+                    .withState(new StateDto("Entre Rios")
+                            , Arrays.asList(new CityDto("Parana"))).build());
+            insertCountry(new CountryDto.Builder()
+                    .withCode("URU").withName("Uruguay")
+                    .withState(new StateDto("Montevideo")
+                            , Arrays.asList(new CityDto("Montevideo"))).build());
 
             // when
-            ResponseEntity<Country[]> savedCountryResponse = restTemplate.getForEntity("/locations", Country[].class);
+            ResponseEntity<CountryDto[]> savedCountryResponse = restTemplate.getForEntity("/locations", CountryDto[].class);
 
             // then
             assertThat(savedCountryResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-            Country[] actualCountries = savedCountryResponse.getBody();
+            CountryDto[] actualCountries = savedCountryResponse.getBody();
             assertThat(actualCountries).hasSize(2);
 
             // and
-            assertThat(Arrays.stream(actualCountries).map(Country::getCode).collect(Collectors.toList()))
+            assertThat(Arrays.stream(actualCountries).map(CountryDto::getCode).collect(Collectors.toList()))
                     .containsAll(Arrays.asList("ARG", "URU"));
         }
     }
@@ -140,23 +143,23 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Add a State")
-        public void addNewState() {
+        public void addNewState() throws W2PEntityExistsException {
             // given
-            Country expectedCountry = new Country.Builder()
+            CountryDto expectedCountry = new CountryDto.Builder()
                     .withCode("SPN").withName("Spain")
-                    .withState(new State("Barcelona")
-                            , Arrays.asList(new City("Barcelona"), new City("Badalona"))).build();
+                    .withState(new StateDto("Barcelona")
+                            , Arrays.asList(new CityDto("Barcelona"), new CityDto("Badalona"))).build();
             insertCountry(expectedCountry);
 
             // when
-            ResponseEntity<Country> actualCountryResponse = restTemplate.postForEntity("/locations/SPN/states", new State("Madrid"), Country.class);
+            ResponseEntity<CountryDto> actualCountryResponse = restTemplate.postForEntity("/locations/SPN/states", new StateDto("Madrid"), CountryDto.class);
 
             // then
             assertThat(actualCountryResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-            Country actualCountry = actualCountryResponse.getBody();
+            CountryDto actualCountry = actualCountryResponse.getBody();
             assertThat(actualCountry).isNotNull();
             assertThat(actualCountry.getStates()).hasSize(2);
-            assertThat(actualCountry.getStates().stream().map(State::getName).collect(Collectors.toList()))
+            assertThat(actualCountry.getStates().stream().map(StateDto::getName).collect(Collectors.toList()))
                     .containsAll(Arrays.asList("Barcelona", "Madrid"));
         }
 
@@ -164,7 +167,7 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
         @DisplayName("Add a State to an invalid Country")
         public void addNewStateToInvalidCountry() {
             // when
-            ResponseEntity<Country> actualCountryResponse = restTemplate.postForEntity("/locations/NNN/states", new State("Madrid"), Country.class);
+            ResponseEntity<CountryDto> actualCountryResponse = restTemplate.postForEntity("/locations/NNN/states", new StateDto("Madrid"), CountryDto.class);
 
             // then
             assertThat(actualCountryResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -172,16 +175,16 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Add a duplicated State")
-        public void addDuplicatedState() {
+        public void addDuplicatedState() throws W2PEntityExistsException {
             // given
-            Country expectedCountry = new Country.Builder()
+            CountryDto expectedCountry = new CountryDto.Builder()
                     .withCode("SPN").withName("Spain")
-                    .withState(new State("Barcelona")
-                            , Arrays.asList(new City("Barcelona"), new City("Badalona"))).build();
+                    .withState(new StateDto("Barcelona")
+                            , Arrays.asList(new CityDto("Barcelona"), new CityDto("Badalona"))).build();
             insertCountry(expectedCountry);
 
             // when
-            ResponseEntity<Country> actualCountryResponse = restTemplate.postForEntity("/locations/SPN/states", new State("Barcelona"), Country.class);
+            ResponseEntity<CountryDto> actualCountryResponse = restTemplate.postForEntity("/locations/SPN/states", new StateDto("Barcelona"), CountryDto.class);
 
             // then
             assertThat(actualCountryResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
@@ -193,40 +196,40 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Add a City")
-        public void addNewCity() {
+        public void addNewCity() throws W2PEntityExistsException {
             // given
-            Country expectedCountry = new Country.Builder()
+            CountryDto expectedCountry = new CountryDto.Builder()
                     .withCode("SPN").withName("Spain")
-                    .withState(new State("Barcelona")
-                            , Arrays.asList(new City("Barcelona"))).build();
+                    .withState(new StateDto("Barcelona")
+                            , Arrays.asList(new CityDto("Barcelona"))).build();
             insertCountry(expectedCountry);
 
             // when
-            ResponseEntity<Country> actualCountryResponse =
+            ResponseEntity<CountryDto> actualCountryResponse =
                     restTemplate.postForEntity("/locations/SPN/Barcelona/cities",
-                            new City("Badalona"),
-                            Country.class);
+                            new CityDto("Badalona"),
+                            CountryDto.class);
 
             // then
             assertThat(actualCountryResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-            Country actualCountry = actualCountryResponse.getBody();
+            CountryDto actualCountry = actualCountryResponse.getBody();
             assertThat(actualCountry).isNotNull();
-            List<String> cities = actualCountry.getStates().stream().flatMap(state -> state.getCities().stream()).map(City::getName).collect(Collectors.toList());
+            List<String> cities = actualCountry.getStates().stream().flatMap(state -> state.getCities().stream()).map(CityDto::getName).collect(Collectors.toList());
             assertThat(cities).containsAll(Arrays.asList("Barcelona", "Badalona"));
         }
 
         @Test
         @DisplayName("Add a city to an invalid State")
-        public void addNewCityToInvalidState() {
+        public void addNewCityToInvalidState() throws W2PEntityExistsException {
             // given
-            Country expectedCountry = new Country.Builder()
+            CountryDto expectedCountry = new CountryDto.Builder()
                     .withCode("SPN").withName("Spain")
-                    .withState(new State("Barcelona")
-                            , Arrays.asList(new City("Barcelona"))).build();
+                    .withState(new StateDto("Barcelona")
+                            , Arrays.asList(new CityDto("Barcelona"))).build();
             insertCountry(expectedCountry);
 
             // when
-            ResponseEntity<Country> actualCountryResponse = restTemplate.postForEntity("/locations/SPN/Madrid/cities", new City("Madrid"), Country.class);
+            ResponseEntity<CountryDto> actualCountryResponse = restTemplate.postForEntity("/locations/SPN/Madrid/cities", new CityDto("Madrid"), CountryDto.class);
 
             // then
             assertThat(actualCountryResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -234,16 +237,16 @@ public class LocationsIntegrationTest extends AbstractIntegrationTest {
 
         @Test
         @DisplayName("Add a duplicated City")
-        public void addDuplicatedCity() {
+        public void addDuplicatedCity() throws W2PEntityExistsException {
             // given
-            Country expectedCountry = new Country.Builder()
+            CountryDto expectedCountry = new CountryDto.Builder()
                     .withCode("SPN").withName("Spain")
-                    .withState(new State("Barcelona")
-                            , Arrays.asList(new City("Barcelona"), new City("Badalona"))).build();
+                    .withState(new StateDto("Barcelona")
+                            , Arrays.asList(new CityDto("Barcelona"), new CityDto("Badalona"))).build();
             insertCountry(expectedCountry);
 
             // when
-            ResponseEntity<Country> actualCountryResponse = restTemplate.postForEntity("/locations/SPN/Barcelona/cities", new State("Barcelona"), Country.class);
+            ResponseEntity<CountryDto> actualCountryResponse = restTemplate.postForEntity("/locations/SPN/Barcelona/cities", new StateDto("Barcelona"), CountryDto.class);
 
             // then
             assertThat(actualCountryResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
