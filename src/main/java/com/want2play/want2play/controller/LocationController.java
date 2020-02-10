@@ -1,10 +1,10 @@
 package com.want2play.want2play.controller;
 
+import com.want2play.want2play.dto.CityDto;
+import com.want2play.want2play.dto.CountryDto;
+import com.want2play.want2play.dto.StateDto;
 import com.want2play.want2play.exception.W2PEntityExistsException;
 import com.want2play.want2play.exception.W2PEntityNotFoundException;
-import com.want2play.want2play.model.City;
-import com.want2play.want2play.model.Country;
-import com.want2play.want2play.model.State;
 import com.want2play.want2play.service.LocationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,12 +29,12 @@ public class LocationController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Country> getAllCountries() {
+    public List<CountryDto> getAllCountries() {
         return service.getAllCountries();
     }
 
     @RequestMapping(value = "/{countryCode}", method = RequestMethod.GET)
-    public Country getCountryByCode(@PathVariable("countryCode") String countryCode) {
+    public CountryDto getCountryByCode(@PathVariable("countryCode") String countryCode) {
         try {
             return service.getCountryByCode(countryCode);
         } catch (W2PEntityNotFoundException e) {
@@ -44,10 +44,10 @@ public class LocationController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public Country saveCountry(@RequestBody Country country, HttpServletResponse response) {
+    public CountryDto saveCountry(@RequestBody CountryDto country, HttpServletResponse response) {
         try {
             response.setStatus(HttpServletResponse.SC_CREATED);
-            return service.saveCountry(country);
+            return service.insertCountry(country);
         } catch (W2PEntityExistsException e) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, e.getMessage(), e);
@@ -55,10 +55,10 @@ public class LocationController {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public Country updateCountry(@RequestBody @Valid Country country) {
+    public CountryDto updateCountry(@RequestBody @Valid CountryDto country) {
         try {
             // TODO review
-            return service.saveCountry(country);
+            return service.insertCountry(country);
         } catch (W2PEntityExistsException e) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, e.getMessage(), e);
@@ -76,7 +76,7 @@ public class LocationController {
     }
 
     @RequestMapping(value = "/{countryCode}/states", method = RequestMethod.POST)
-    public Country addState(@PathVariable("countryCode") String countryCode, @RequestBody @Valid State state) {
+    public CountryDto addState(@PathVariable("countryCode") String countryCode, @RequestBody @Valid StateDto state) {
         try {
             return service.addState(countryCode, state);
         } catch (W2PEntityNotFoundException e) {
@@ -89,9 +89,9 @@ public class LocationController {
     }
 
     @RequestMapping(value = "/{countryCode}/{state}/cities", method = RequestMethod.POST)
-    public Country addCity(@RequestBody @Valid City city,
-                           @PathVariable("countryCode") String countryCode,
-                           @PathVariable("state") String state) {
+    public CountryDto addCity(@RequestBody @Valid CityDto city,
+                              @PathVariable("countryCode") String countryCode,
+                              @PathVariable("state") String state) {
         try {
             return service.addCity(countryCode, state, city);
         } catch (W2PEntityExistsException e) {
